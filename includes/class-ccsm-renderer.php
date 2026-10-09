@@ -16,29 +16,7 @@ final class CCSM_Renderer {
         }
     }
     public function generate_background(string $prompt, string $size) {
-        $response = wp_remote_post('https://api.openai.com/v1/images/generations', [
-            'timeout'=>180,
-            'headers'=>['Authorization'=>'Bearer '.$this->settings['key'], 'Content-Type'=>'application/json'],
-            'body'=>wp_json_encode([
-                'model'=>$this->settings['model'] ?: 'gpt-image-1.5',
-                'prompt'=>$prompt,'size'=>$size,'quality'=>'medium',
-                'output_format'=>'png','n'=>1,
-            ]),
-        ]);
-        if (is_wp_error($response)) return $response;
-        $status = wp_remote_retrieve_response_code($response);
-        $raw = wp_remote_retrieve_body($response);
-        $payload = json_decode($raw,true);
-        if ($status < 200 || $status >= 300) {
-            return new WP_Error('ccsm_api', 'OpenAI API: HTTP '.$status.' · '.sanitize_text_field($payload['error']['message']??'Falha ao gerar imagem.'));
-        }
-        $b64 = $payload['data'][0]['b64_json'] ?? '';
-        if (!$b64) return new WP_Error('ccsm_empty', 'API não retornou imagem em base64.');
-        $binary = base64_decode($b64, true);
-        if (!$binary || strlen($binary) > 20*1024*1024) return new WP_Error('ccsm_file', 'Imagem retornada inválida ou maior que 20 MB.');
-        $im=@imagecreatefromstring($binary);
-        if (!$im) return new WP_Error('ccsm_image', 'Formato de imagem retornado não suportado pelo servidor.');
-        return $im;
+        return CCSM_Image_Providers::generate($this->settings, $prompt, $size);
     }
     private function rgb($hex): array {
         $hex=ltrim($hex,'#');
@@ -190,7 +168,8 @@ final class CCSM_Renderer {
         $address=(string)($d['address']??'');
         if ($portrait) {
             $this->pill($canvas, $type==='story_live'?'TEMA DA MENSAGEM':'TEMA DA MENSAGEM', $w/2,375,650,70);
-            $size=mb_strlen($theme)>30?64:84;
+            $length=function_exists('mb_strlen') ? mb_strlen($theme) : strlen($theme);
+            $size=$length>30?64:84;
             $end=$this->text_lines($canvas,$theme,$w/2,620,$size,'FFFFFF',970,$size+31);
             if ($type==='story_live') {
                 $this->pill($canvas,'● TRANSMISSÃO AO VIVO',$w/2,max(955,$end+35),700,100,true);
