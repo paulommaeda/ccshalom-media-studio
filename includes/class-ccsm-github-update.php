@@ -56,7 +56,8 @@ final class CCSM_GitHub_Update {
     public static function rename($source,$remote_source,$upgrader,$hook_extra) {
         $plugin=$hook_extra['plugin']??'';
         if ($plugin!==plugin_basename(CCSM_FILE) || !is_dir($source)) return $source;
-        $dest=trailingslashit($remote_source).self::SLUG;
+        $installed_dir=dirname(plugin_basename(CCSM_FILE));
+        $dest=trailingslashit($remote_source).$installed_dir;
         if (rtrim($source,'/')===rtrim($dest,'/')) return $source;
         global $wp_filesystem;
         if (!$wp_filesystem || !method_exists($wp_filesystem,'move')) return $source;
