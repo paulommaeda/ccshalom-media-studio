@@ -249,7 +249,7 @@ final class CCSM_Plugin {
             update_post_meta($id, self::META, $d);
         } catch (Throwable $e) {
             $d = self::campaign($id);
-            $d['status']='error'; $d['error']=mb_substr($e->getMessage(),0,700);
+            $d['status']='error'; $d['error']=substr($e->getMessage(),0,700);
             update_post_meta($id, self::META, $d);
             error_log('CCSM generation error: ' . $e->getMessage());
         } finally { delete_transient($lock); }
