@@ -212,7 +212,8 @@ final class CCSM_Renderer {
             $start=$type==='thumb_recorded'?180:235;
             $max=$type==='thumb_recorded'?700:1160;
             $this->pill($canvas,$type==='thumb_live'?'TEMA DA MENSAGEM':'MENSAGEM DE DOMINGO',$cx,$type==='thumb_recorded'?115:160,$type==='thumb_recorded'?610:650,60);
-            $s=mb_strlen($theme)>35?47:mb_strlen($theme)>22?58:83;
+            $theme_length=function_exists('mb_strlen') ? mb_strlen($theme) : strlen($theme);
+            $s=$theme_length>35 ? 47 : ($theme_length>22 ? 58 : 83);
             $end=$this->text_lines($canvas,$theme,$cx,$start,$s,'FFFFFF',$max,$s+22);
             if ($type==='thumb_live') {
                 $this->pill($canvas,'● TRANSMISSÃO AO VIVO',420,540,550,78,true);
