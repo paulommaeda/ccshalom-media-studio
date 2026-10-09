@@ -2,19 +2,19 @@
 
 Plugin WordPress para gerar campanhas de mensagens com quatro artes: convite e live (Stories 9:16), thumbnail da live e thumbnail da mensagem gravada (16:9).
 
-Versão inicial: **0.1.0**. Requer PHP 8.0+, WordPress 6.2+ e extensão GD; uma conta da **OpenAI API** com faturamento próprio para geração dos cenários. A assinatura ChatGPT não concede créditos de API.
+Versão: **0.2.0**. Requer PHP 8.0+, WordPress 6.2+ e GD; uma conta com API e faturamento em pelo menos um provedor de imagem. A assinatura ChatGPT não concede créditos de API.
 
 ## Instalação
 
 1. Baixe o ZIP do código em **Code > Download ZIP** no GitHub.
 2. Em **Plugins > Adicionar plugin > Enviar plugin**, envie o ZIP, instale e ative.
-3. Abra **CCShalom Studio > Configurações**. Informe a chave OpenAI API, selecione a logo branca OFICIAL, o símbolo da pomba para marca d'água, e (opcionalmente) uma fonte .ttf autorizada.
+3. Abra **CCShalom Studio > Configurações**. Selecione um provedor, configure a chave ou credenciais, selecione a logo branca OFICIAL, o símbolo da pomba para marca d'água, e (opcionalmente) uma fonte .ttf autorizada.
 4. Crie uma campanha em **Nova campanha**, preencha tema, pregador, data, horários, endereço, cena e envie a foto do pastor pela Biblioteca de Mídia.
 5. Clique **Gerar 4 artes**. O processamento ocorre em etapas pelo WP-Cron; atualize a página para acompanhar.
 
 ## Como funciona
 
-A OpenAI gera duas imagens de **cenário sem texto, pessoas ou logos**. O plugin usa o GD localmente para compor as quatro artes, sobrepor o arquivo oficial da logo, a marca d'água, textos exatos, e a foto original do pregador na thumbnail gravada. Recomenda-se foto do pastor já recortada em **PNG transparente** para melhor resultado (não há recriação da face). Os arquivos gerados ficam na Biblioteca de Mídia do WordPress.
+O provedor selecionado gera duas imagens de **cenário sem texto, pessoas ou logos**. O plugin usa o GD localmente para compor as quatro artes, sobrepor o arquivo oficial da logo, a marca d'água, textos exatos, e a foto original do pregador na thumbnail gravada. Recomenda-se foto do pastor já recortada em **PNG transparente** para melhor resultado (não há recriação da face). Os arquivos gerados ficam na Biblioteca de Mídia do WordPress.
 
 ## Atualizações via painel
 
@@ -22,7 +22,7 @@ O plugin inclui verificação de atualização do branch `main` do repositório 
 
 ## Segurança e limites
 
-- Chave de API armazenada em opções do WordPress, não exposta ao navegador ou GitHub.
+- Chaves salvas em opções não carregadas automaticamente pelo WordPress; não exibidas novamente. Para Google Cloud em produção, prefira a constante CCSM_VERTEX_CREDENTIALS_JSON no wp-config.php.
 - Somente administradores conseguem editar dados e gerar artes.
 - **Nenhum serviço é chamado sem a chave configurada e confirmação de gerar.**
 - As gerações consomem créditos pagos da API.
@@ -37,3 +37,10 @@ O plugin inclui verificação de atualização do branch `main` do repositório 
 - Thumbnail gravada: 1280 × 720 PNG
 
 Código mantido em https://github.com/paulommaeda/ccshalom-media-studio.
+
+
+## Escolha de IA: cinco provedores
+
+O plugin agora permite escolher **OpenAI**, **Gemini (Google AI Studio)**, **Google Cloud Vertex AI (Gemini/Imagen)**, **Stability AI (Stable Image Core)** e **Replicate (FLUX Schnell e modelos oficiais)**. A geração das quatro artes usa duas imagens de fundo do provedor escolhido, e mantém o layout, logo, foto original do pastor e textos via processamento local.
+
+Cada provedor requer credenciais, disponibilidade e faturamento próprios. Configure em **CCShalom Studio → Configurações**. Veja as instruções e restrições de segurança em [docs/providers.md](docs/providers.md).
